@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://building/building_navigation.gd" id="1_nav_script"]
+[ext_resource type="NavigationMesh" path="res://building/olopsc_navmesh.tres" id="2_navmesh"]
+[ext_resource type="PackedScene" path="res://building/Olopsc_Building.glb" id="3_glb"]
+
+[node name="OlopscBuilding" type="Node3D"]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = ExtResource("2_navmesh")
+script = ExtResource("1_nav_script")
+
+[node name="Model" parent="NavigationRegion3D" instance=ExtResource("3_glb")]

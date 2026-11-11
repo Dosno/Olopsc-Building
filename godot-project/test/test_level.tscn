@@ -1,0 +1,96 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://building/olopsc_building.tscn" id="1_building"]
+[ext_resource type="Script" path="res://test/test_player.gd" id="2_player"]
+[ext_resource type="Script" path="res://test/test_enemy.gd" id="3_enemy"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+tonemap_mode = 2
+ssao_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="PlayerShape"]
+radius = 0.35
+height = 1.75
+
+[sub_resource type="CapsuleShape3D" id="EnemyShape"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="EnemyMesh"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="EnemyMat"]
+albedo_color = Color(0.8, 0.1, 0.05, 1)
+
+[sub_resource type="PlaneMesh" id="GroundMesh"]
+size = Vector2(400, 400)
+
+[sub_resource type="StandardMaterial3D" id="GroundMat"]
+albedo_color = Color(0.22, 0.3, 0.16, 1)
+
+[sub_resource type="WorldBoundaryShape3D" id="GroundShape"]
+
+[node name="TestLevel" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.766, -0.413, 0.492, 0, 0.766, 0.643, -0.643, -0.492, 0.587, 0, 30, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38, -0.04, -25)
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("GroundMesh")
+surface_material_override/0 = SubResource("GroundMat")
+
+[node name="Shape" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("GroundShape")
+
+[node name="OlopscBuilding" parent="." instance=ExtResource("1_building")]
+
+[node name="Player" type="CharacterBody3D" parent="." groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.1, -20)
+floor_snap_length = 0.3
+script = ExtResource("2_player")
+
+[node name="Shape" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("PlayerShape")
+
+[node name="Head" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/Head"]
+current = true
+
+[node name="Enemy" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0.1, -20)
+floor_snap_length = 0.3
+script = ExtResource("3_enemy")
+
+[node name="Shape" type="CollisionShape3D" parent="Enemy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("EnemyShape")
+
+[node name="Mesh" type="MeshInstance3D" parent="Enemy"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("EnemyMesh")
+surface_material_override/0 = SubResource("EnemyMat")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="Enemy"]
+path_desired_distance = 0.5
+target_desired_distance = 1.2
+height = 1.8
+radius = 0.35
